@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>feature</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>src/image/back.jpg</name>
+			<type>1</type>
+			<location>C:/Users/KHG/Desktop/feature/src/image/back.jpg</location>
+		</link>
+		<link>
+			<name>src/image/sunny.png</name>
+			<type>1</type>
+			<location>C:/Users/KHG/Desktop/feature/src/image/sunny.png</location>
+		</link>
+	</linkedResources>
+</projectDescription>
