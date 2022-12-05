@@ -25,10 +25,10 @@ public class weather extends form
 	public static String NT_ST = "";
 	public static String NOW = "";
 	static String time = "";
-    static String baseDate = "20221115";
-    static String baseTime = "0500";
+    static String baseDate = "20221203";
+    static String baseTime = "1100";
     static String result;
-    
+    // 단기예보 0200, 0500, 0800, 1100, 1400, 1700, 2000, 2300
 	public static void getapi() throws IOException, ParseException
 	{
 		NT_INT = (NT_INT * 100)+100;
@@ -38,7 +38,7 @@ public class weather extends form
 	    String type = "json";
 	    String Key = "NPTCngB4moFVqeRUE7mXY9ngffup6u%2Bx6gsGmA1K0yFzOKfgLC8OQqPF8YJyWlp15IIwI6O4aPh64H7%2F3x0I1w%3D%3D";
 	    String page = "1";
-	    String row = "100";
+	    String row = "400";
 	    String Url = ("http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?" + "serviceKey=" +
 	    Key + "&pageNo=" + page + "&numOfRows=" + row + "&dataType=" + type + "&base_date=" + baseDate + "&base_time=" + baseTime + "&nx=" + nx + "&ny=" + ny);
 	    URL url = new URL(Url);
@@ -73,7 +73,7 @@ public class weather extends form
 		JSONObject items = (JSONObject) body.get("items"); // body 객체에서 items 찾아감
 		JSONArray item = (JSONArray) items.get("item"); // items 객체의 item 배열 찾아 저장
 		form gui = new form();
-		
+
 		int count = 0;
 		int icount = 0;
 		ImageIcon sun = new ImageIcon("src/image/sunny.png");
@@ -86,8 +86,9 @@ public class weather extends form
 			time = (String) weather.get("fcstTime"); // weather 객체에서 FcstTime 값을 찾아 time 저장
 			category = (String) weather.get("category"); // weather 객체에서 category 값을 찾아 category에 저장
 
-			if (NT_INT == 0 ) { // NT_INT가 0보다 작을때
+			/*if (NT_INT == 2400 ) { // NT_INT가 0보다 작을때
 				NT_ST = "0000"; // NT_ST는 0000 자정
+				NT_INT = 0;
 			} else { // NT_INT가 0이 아닐때
 				//if (NT_ST.length() < 4) { // 0이 아니고 NT_ST 길이가 3일때
 				if (NT_INT < 1000) {
@@ -101,9 +102,39 @@ public class weather extends form
 					NT_ST = NT_ST;
 					//System.out.println("Num " + NT_ST + " Length = " + NT_ST.length());
 				}
-			}
+			}*/
 			
-			System.out.println("CT : " + category + " TIME : " + time + " NT_ST : " + NT_ST);
+			if (NT_INT == 2400) { // 자정일 때
+			//if (NT_INT > 2400) {
+				NT_ST = "0000";
+				//System.out.println("NT_ST IS 0000");
+			}
+			if (NT_INT == 2500) { NT_ST = "0100"; }
+			if (NT_INT == 2600) { NT_ST = "0200"; }
+			if (NT_INT == 2700) { NT_ST = "0300"; }
+			if (NT_INT == 2800) { NT_ST = "0400"; }
+			if (NT_INT == 2900) { NT_ST = "0500"; }
+			if (NT_INT == 3000) { NT_ST = "0600"; }
+			if (NT_INT == 3100) { NT_ST = "0700"; }
+			if (NT_INT == 3200) { NT_ST = "0800"; }
+			if (NT_INT == 3300) { NT_ST = "0900"; }
+			if (NT_INT == 3400) { 
+				NT_INT = 1000;
+				NT_ST = "1000"; 
+			}
+			// 여기서 인트는 0 st = 0000
+			if (NT_INT < 2400){ // 자정이 아닐 때
+				if (NT_INT >= 1000) { // 4자리(오전 10시 이상) 일때
+					NT_ST = Integer.toString(NT_INT);
+				} 
+				if (NT_INT <= 900) { // 3자리(오전 9시 이하) 일때
+					NT_ST = Integer.toString(NT_INT);
+					NT_ST = "0" + NT_ST;
+					
+				}
+			}
+			//System.out.println("NT ST = " + NT_ST);
+			System.out.println("CT : " + category + " TIME : " + time + " NT_ST : " + NT_ST + " NT_INT : " + NT_INT);
 			
 			if (NT_ST.equals(time)) {
 				if (category.equals("TMP")) { 
@@ -124,24 +155,37 @@ public class weather extends form
 				//
 
 				if (count >= 3) {
-					NT_INT = NT_INT + 100;
 					count = 0;
+					NT_INT = NT_INT + 100;
 					icount = icount + 1;
+					//System.out.println("INT = " + NT_INT);
 				}
-				System.out.println("ic = " + icount);
-				if (icount <= 8) {
-					NOW_INT = NT_INT;
-					for (int j=0; j<=24; j++) {
-						int hours = j * 100;
-						if (NOW_INT == hours) {
-							if (hours < 1200) {
-								NOW = "오전 " + j + "시";	
-							} else {
-								NOW = "오후 " + j + "시";
-							}
-							 
-						}
-					}
+				//System.out.println("ic = " + icount);
+				if (icount <= 24) {
+						if (NT_ST.equals("0000")) { NOW = "오전 12시"; }
+						if (NT_ST.equals("0100")) { NOW = "오전 1시"; }
+						if (NT_ST.equals("0200")) { NOW = "오전 2시"; }
+						if (NT_ST.equals("0300")) { NOW = "오전 3시"; }
+						if (NT_ST.equals("0400")) { NOW = "오전 4시"; }
+						if (NT_ST.equals("0500")) { NOW = "오전 5시"; }
+						if (NT_ST.equals("0600")) { NOW = "오전 6시"; }
+						if (NT_ST.equals("0700")) { NOW = "오전 7시"; }
+						if (NT_ST.equals("0800")) { NOW = "오전 8시"; }
+						if (NT_ST.equals("0900")) { NOW = "오전 9시"; }
+						if (NT_ST.equals("1000")) { NOW = "오전 10시"; }
+						if (NT_ST.equals("1100")) { NOW = "오전 11시"; }
+						if (NT_ST.equals("1200")) { NOW = "오후 12시"; }
+						if (NT_ST.equals("1300")) { NOW = "오후 1시"; }
+						if (NT_ST.equals("1400")) { NOW = "오후 2시"; }
+						if (NT_ST.equals("1500")) { NOW = "오후 3시"; }
+						if (NT_ST.equals("1600")) { NOW = "오후 4시"; }
+						if (NT_ST.equals("1700")) { NOW = "오후 5시"; }
+						if (NT_ST.equals("1800")) { NOW = "오후 6시"; }
+						if (NT_ST.equals("1900")) { NOW = "오후 7시"; }
+						if (NT_ST.equals("2000")) { NOW = "오후 8시"; }
+						if (NT_ST.equals("2100")) { NOW = "오후 9시"; }
+						if (NT_ST.equals("2200")) { NOW = "오후 10시"; }
+						if (NT_ST.equals("2300")) { NOW = "오후 11시"; }
 					gui.Today_Time[icount].setText(NOW);
 					gui.Today_TMP[icount].setText(tmp_value + "℃");
 					gui.Today_Image[icount].setText(sky_value);
@@ -174,7 +218,7 @@ public class weather extends form
 			
 
 			/*
-			단기예보 0200, 0500, 0800, 1100, 1400, 1700, 2000, 2300
+			
 				POP	강수확률	%	
 				PTY	강수형태 : 없음(0), 비(1), 비/눈(2), 눈(3), 소나기(4) 
 				PCP	1시간 강수량	범주 (1 mm)	
