@@ -1,5 +1,6 @@
 package feature;
 import java.io.InputStreamReader;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -10,29 +11,73 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import javax.swing.*;
-import java.io.FileWriter;
-
 
 public class weather extends form
 {
+	
 	static LocalTime now = LocalTime.now();
+	static LocalDate dow = LocalDate.now();
 	static String category = "";
 	public static String tmp_value = "";
-	public static String pop_value = "";
+	public static String pop_value = "0";
 	public static String sky_value = "";
+	public static String wsd_value = "";
 	public static int NT_INT = now.getHour();
 	public static int NOW_INT = 0;
 	public static String NT_ST = "";
 	public static String NOW = "";
 	static String time = "";
-    static String baseDate = "20221203";
-    static String baseTime = "1100";
+	static String year = Integer.toString(dow.getYear());
+	static String month = Integer.toString(dow.getMonthValue());
+	static String day = Integer.toString(dow.getDayOfMonth()-1);
+    static String baseDate =  "";
+    static String baseTime = "";
     static String result;
+
     // 단기예보 0200, 0500, 0800, 1100, 1400, 1700, 2000, 2300
 	public static void getapi() throws IOException, ParseException
 	{
 		NT_INT = (NT_INT * 100)+100;
-		System.out.println("NOW " + NT_INT);
+		if (NT_INT == 100) { baseTime = "2300"; } 
+		else if (NT_INT == 200) { baseTime = "2300"; }
+		else if (NT_INT == 300) { baseTime = "0200"; }
+		else if (NT_INT == 400) { baseTime = "0200"; }
+		else if (NT_INT == 500) { baseTime = "0500"; }
+		else if (NT_INT == 600) { baseTime = "0500"; }
+		else if (NT_INT == 700) { baseTime = "0500"; }
+		else if (NT_INT == 800) { baseTime = "0800"; }
+		else if (NT_INT == 900) { baseTime = "0800"; }
+		else if (NT_INT == 1000) { baseTime = "0800"; }
+		else if (NT_INT == 1100) { baseTime = "1100"; }
+		else if (NT_INT == 1200) { baseTime = "1100"; }
+		else if (NT_INT == 1300) { baseTime = "1100"; }
+		else if (NT_INT == 1400) { baseTime = "1400"; }
+		else if (NT_INT == 1500) { baseTime = "1400"; }
+		else if (NT_INT == 1600) { baseTime = "1400"; }
+		else if (NT_INT == 1700) { baseTime = "1700"; }
+		else if (NT_INT == 1800) { baseTime = "1700"; }
+		else if (NT_INT == 1900) { baseTime = "1700"; }
+		else if (NT_INT == 2000) { baseTime = "2000"; }
+		else if (NT_INT == 2100) { baseTime = "2000"; }
+		else if (NT_INT == 2200) { baseTime = "2000"; }
+		else if (NT_INT == 2300) { baseTime = "2000"; }
+		else if (NT_INT == 2400) { baseTime = "2300"; }
+		if (NT_INT < 1200) {
+			Background.setIcon(img1);
+		} else {
+			if (NT_INT < 1900) {
+				Background.setIcon(img2);
+			} else {
+				Background.setIcon(img3);
+			}
+		}
+		Background.setIcon(img3);
+		if (day.length() == 1) {
+			baseDate = year + month + "0" + day;
+		} else {
+			baseDate = year + month + day;
+		}
+		System.out.println("NOW " + NT_INT + "\nBASETIME = " + baseTime + "\nBASEDATE = " + baseDate);
 	    String nx = "63";	//위도
 	    String ny = "89";	//경도
 	    String type = "json";
@@ -42,11 +87,13 @@ public class weather extends form
 	    String Url = ("http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?" + "serviceKey=" +
 	    Key + "&pageNo=" + page + "&numOfRows=" + row + "&dataType=" + type + "&base_date=" + baseDate + "&base_time=" + baseTime + "&nx=" + nx + "&ny=" + ny);
 	    URL url = new URL(Url);
+	    
 	    System.out.print(url);
+	    
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         conn.setRequestProperty("Content-type", "application/json");
-        System.out.println("\n");
+        //System.out.println("\n");
         BufferedReader rd;
         if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
             rd = new BufferedReader(new InputStreamReader(conn.getInputStream(),"UTF-8"));
@@ -55,7 +102,6 @@ public class weather extends form
         }
         StringBuilder sb = new StringBuilder();
         String line;
-       // FileWriter file = new FileWriter("c:/OS/" + baseTime + ".json");
 		
         while ((line = rd.readLine()) != null) {
             sb.append(line);
@@ -63,16 +109,15 @@ public class weather extends form
         rd.close();
         conn.disconnect();
         result= sb.toString();
+        form gui = new form();
+        
         JSONParser parser = new JSONParser(); // 객체 선언
         JSONObject top = (JSONObject) parser.parse(result); // top 객체에 result 값 삽입
-        /*file.write(obj.toJSONString());
-        file.flush();
-		file.close();*/
         JSONObject response = (JSONObject) top.get("response"); // top 객체에서 response 찾아감
 		JSONObject body = (JSONObject) response.get("body"); // response 객체에서 body 찾아감
 		JSONObject items = (JSONObject) body.get("items"); // body 객체에서 items 찾아감
 		JSONArray item = (JSONArray) items.get("item"); // items 객체의 item 배열 찾아 저장
-		form gui = new form();
+		
 
 		int count = 0;
 		int icount = 0;
@@ -81,28 +126,11 @@ public class weather extends form
 		ImageIcon cloudy2 = new ImageIcon("src/image/cloudy2.png");
 		ImageIcon cloudy3 = new ImageIcon("src/image/cloudy3.png");
 		ImageIcon rain = new ImageIcon("src/image/rain.png");
+		
 		for(int i = 0 ; i < item.size(); i++) {	
 			JSONObject weather = (JSONObject) item.get(i); // weather 객체에 item i 배열 저장 
 			time = (String) weather.get("fcstTime"); // weather 객체에서 FcstTime 값을 찾아 time 저장
 			category = (String) weather.get("category"); // weather 객체에서 category 값을 찾아 category에 저장
-
-			/*if (NT_INT == 2400 ) { // NT_INT가 0보다 작을때
-				NT_ST = "0000"; // NT_ST는 0000 자정
-				NT_INT = 0;
-			} else { // NT_INT가 0이 아닐때
-				//if (NT_ST.length() < 4) { // 0이 아니고 NT_ST 길이가 3일때
-				if (NT_INT < 1000) {
-					NT_ST = Integer.toString(NT_INT);
-					NT_ST = "0" + NT_ST;
-					//System.out.println("Num1 " + NT_ST + " Length = " + NT_ST.length());
-				}
-				//if (NT_ST.length() == 4){ // 0이 아니고 NT_ST 길이가 4이 아닐때
-				if (NT_INT >= 1000) {
-					NT_ST = Integer.toString(NT_INT);
-					NT_ST = NT_ST;
-					//System.out.println("Num " + NT_ST + " Length = " + NT_ST.length());
-				}
-			}*/
 			
 			if (NT_INT == 2400) { // 자정일 때
 			//if (NT_INT > 2400) {
@@ -140,28 +168,32 @@ public class weather extends form
 				if (category.equals("TMP")) { 
 					tmp_value = (String) weather.get("fcstValue");
 					count = count + 1;
-					System.out.println("Category = " + category + " Time Verified! " + time + "\nTMP = " + tmp_value);
+					//System.out.println("Category = " + category + " Time Verified! " + time + "TMP = " + tmp_value);
 				}
 				if (category.equals("SKY")) {
 					sky_value = (String) weather.get("fcstValue");
 					count = count + 1;
-					System.out.println("Category = " + category + " Time Verified! " + time + "\nSKY = " + sky_value);
+					//System.out.println("Category = " + category + " Time Verified! " + time + "\nSKY = " + sky_value);
 				}
 				if(category.equals("POP")) {
 					pop_value = (String) weather.get("fcstValue");
 					count = count + 1;
-					System.out.println(i + "Category = " + category + " Time Verified! " + time + "\nPOP = " + pop_value);
+					//System.out.println(i + "Category = " + category + " Time Verified! " + time + "POP = " + pop_value);
+				}
+				if(category.equals("WSD")) {
+					wsd_value = (String) weather.get("fcstValue");
+					count = count + 1;
+					//System.out.println(i + "Category = " + category + " Time Verified! " + time + "\nWSD = " + wsd_value);
 				}
 				//
-
-				if (count >= 3) {
+				if (count >= 4) {
 					count = 0;
 					NT_INT = NT_INT + 100;
 					icount = icount + 1;
 					//System.out.println("INT = " + NT_INT);
 				}
 				//System.out.println("ic = " + icount);
-				if (icount <= 24) {
+				if (icount < 24) {
 						if (NT_ST.equals("0000")) { NOW = "오전 12시"; }
 						if (NT_ST.equals("0100")) { NOW = "오전 1시"; }
 						if (NT_ST.equals("0200")) { NOW = "오전 2시"; }
@@ -186,39 +218,57 @@ public class weather extends form
 						if (NT_ST.equals("2100")) { NOW = "오후 9시"; }
 						if (NT_ST.equals("2200")) { NOW = "오후 10시"; }
 						if (NT_ST.equals("2300")) { NOW = "오후 11시"; }
-					gui.Today_Time[icount].setText(NOW);
-					gui.Today_TMP[icount].setText(tmp_value + "℃");
-					gui.Today_Image[icount].setText(sky_value);
-					if (Today_Image[icount].equals("1")) {
-						gui.Today_Image[icount].setIcon(sun);
-					}
+						gui.Today_POP[icount].setText(pop_value + " %");
+						gui.Today_Time[icount].setText(NOW);
+						gui.Today_TMP[icount].setText(tmp_value + " ℃");
+						gui.Today_Image[icount].setText("");
+						gui.Today_WSD[icount].setText(wsd_value + " m/s");
+
 					if (sky_value.equals("1")) {
 						gui.Today_Image[icount].setIcon(sun);
+						gui.address_Image.setIcon(ncloudy1);
+						address_sky.setText("화창한 날씨");
 					}
 					if (sky_value.equals("2")) {
-						gui.Today_Image[icount].setIcon(sun);
+						gui.Today_Image[icount].setIcon(cloudy);
+						gui.address_Image.setIcon(ncloudy1);
+						address_sky.setText("화창한 날씨");
 					}
 					if (sky_value.equals("3")) {
 						gui.Today_Image[icount].setIcon(cloudy2);
+						gui.address_Image.setIcon(ncloudy1);
+						address_sky.setText("다소 흐린 날씨");
 					}
 					if (sky_value.equals("4")) {
 						gui.Today_Image[icount].setIcon(cloudy3);
+						gui.address_Image.setIcon(ncloudy1);
+						address_sky.setText("다소 흐린 날씨");
 					}
 					if (sky_value.equals("5")) {
 						gui.Today_Image[icount].setIcon(rain);
+						gui.address_Image.setIcon(ncloudy1);
+						address_sky.setText("눈 또는 비");
 					}
 					if (sky_value.equals("6")) {
 						gui.Today_Image[icount].setIcon(rain);
+						gui.address_Image.setIcon(ncloudy1);
+						address_sky.setText("눈 또는 비");
 					}
+
+					if (icount == 0) {
+						gui.address_tmp.setText(tmp_value + "℃");
+						gui.address_wsd.setText("풍속 " + wsd_value + " m/s");
+						gui.address_pop.setText("강수확률 " + pop_value + " %");
+						gui.address_time.setText("마지막 업데이트: " + NOW);
+					}
+
 				}
 			}
 			
 		}
-		//gui.address_tmp.setText(tmp_value + "℃")
 			
 
 			/*
-			
 				POP	강수확률	%	
 				PTY	강수형태 : 없음(0), 비(1), 비/눈(2), 눈(3), 소나기(4) 
 				PCP	1시간 강수량	범주 (1 mm)	
@@ -233,10 +283,7 @@ public class weather extends form
 				WAV	파고	M	
 				VEC	풍향	deg
 				WSD	풍속	m/s	
-			 */
-		
-	
-	
+			 */		
     }
-	
+
 }

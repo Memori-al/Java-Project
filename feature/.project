@@ -21,9 +21,29 @@
 			<location>C:/Users/KHG/Desktop/feature/src/image/back.jpg</location>
 		</link>
 		<link>
+			<name>src/image/back3.jpg</name>
+			<type>1</type>
+			<location>C:/Users/KHG/Desktop/feature/src/image/back3.jpg</location>
+		</link>
+		<link>
+			<name>src/image/drop.png</name>
+			<type>1</type>
+			<location>C:/Users/KHG/Desktop/feature/src/image/drop.png</location>
+		</link>
+		<link>
+			<name>src/image/now_cloudy.png</name>
+			<type>1</type>
+			<location>C:/Users/KHG/Desktop/feature/src/image/now_cloudy.png</location>
+		</link>
+		<link>
 			<name>src/image/sunny.png</name>
 			<type>1</type>
 			<location>C:/Users/KHG/Desktop/feature/src/image/sunny.png</location>
+		</link>
+		<link>
+			<name>src/image/wsd.png</name>
+			<type>1</type>
+			<location>C:/Users/KHG/Desktop/feature/src/image/wsd.png</location>
 		</link>
 	</linkedResources>
 </projectDescription>
